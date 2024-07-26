@@ -16,20 +16,44 @@ var commandMap = map[string]CommandObj{
 		command:     "len of bytes",
 		parsingFunc: fileSize,
 	},
+	"-l": {
+		command:     "len of lines",
+		parsingFunc: noOfLines,
+	},
+	"-w": {
+		command:     "no of words",
+		parsingFunc: noOfWords,
+	},
 }
 
-func createScannerObj(filename string) (int, string) {
+func noOfLines(filename string) (int, string) {
 	fileObj, err := os.Open(filename)
 	if err != nil {
 		return 0, "Not able to read the file"
 	}
 	scanner := bufio.NewScanner(fileObj)
 	scanner.Split(bufio.ScanLines)
-	noOfLines := 1
+	noOfLines := 0
 	for scanner.Scan() {
 		noOfLines++
+		fmt.Printf("Read line: %s\n", scanner.Text())
 	}
 	return noOfLines, ""
+}
+
+func noOfWords(filename string) (int, string) {
+	fileObj, err := os.Open(filename)
+	if err != nil {
+		return 0, "Not able to read the file"
+	}
+	scanner := bufio.NewScanner(fileObj)
+	scanner.Split(bufio.ScanWords)
+	noOfWords := 0
+	for scanner.Scan() {
+		noOfWords++
+		fmt.Printf("Read line: %s\n", scanner.Text())
+	}
+	return noOfWords, ""
 }
 
 func fileSize(filename string) (int, string) {
@@ -45,7 +69,7 @@ func main() {
 
 	args := os.Args
 
-	if len(args) != 3 {
+	if len(args) > 2 {
 		fmt.Println("you need to specify the file path and command flag")
 	}
 
