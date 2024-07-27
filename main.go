@@ -27,12 +27,12 @@ var commandMap = map[string]CommandObj{
 }
 
 func noOfLines(filename string) (int, string) {
-	fileObj, err := os.Open(filename)
+	scanner, err := getScannerForFile(filename)
 	if err != nil {
-		return 0, "Not able to read the file"
+		return 0, "Error occured while opening the file"
 	}
-	scanner := bufio.NewScanner(fileObj)
 	scanner.Split(bufio.ScanLines)
+
 	noOfLines := 0
 	for scanner.Scan() {
 		noOfLines++
@@ -42,18 +42,27 @@ func noOfLines(filename string) (int, string) {
 }
 
 func noOfWords(filename string) (int, string) {
-	fileObj, err := os.Open(filename)
+	scanner, err := getScannerForFile(filename)
 	if err != nil {
-		return 0, "Not able to read the file"
+		return 0, "Error occured while opening the file"
 	}
-	scanner := bufio.NewScanner(fileObj)
 	scanner.Split(bufio.ScanWords)
+
 	noOfWords := 0
 	for scanner.Scan() {
 		noOfWords++
 		fmt.Printf("Read line: %s\n", scanner.Text())
 	}
 	return noOfWords, ""
+}
+
+func getScannerForFile(filename string) (*bufio.Scanner, error) {
+	fileObj, err := os.Open(filename)
+	if err != nil {
+		return &bufio.Scanner{}, err
+	}
+	scanner := bufio.NewScanner(fileObj)
+	return scanner, nil
 }
 
 func fileSize(filename string) (int, string) {
